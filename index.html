@@ -1,177 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Reprise du volant – Chrono</title>
-<meta name="color-scheme" content="dark light" />
-<style>
-  :root{
-    --bg:#0a0b0e; --panel:#0f1117; --bevel:#0b0d12; --stroke:#1e2430;
-    --glow:#e10600; /* rouge course */
-    --fg:#eef1f5; --muted:#9aa3b2; --radius:18px;
-  }
-
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; display:grid; place-items:center;
-    background:linear-gradient(160deg,#0a0b0e 0%,#121522 60%,#0b0d12 100%);
-    color:var(--fg);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    letter-spacing:.02em;
-  }
-
-  main{ width:min(1100px,95vw); text-align:center; padding:24px }
-
-  h1{
-    margin:0 0 24px;
-    font-weight:800; text-transform:uppercase; letter-spacing:.14em;
-    font-size: clamp(16px, 1.8vw + 10px, 28px);
-  }
-  h1::after{
-    content:""; display:block; height:2px; width:120px; margin:12px auto 0;
-    background:linear-gradient(90deg,transparent, var(--glow), transparent);
-    filter: drop-shadow(0 0 6px rgba(225,6,0,.45));
-  }
-
-  .board{
-    background:linear-gradient(180deg, #0f1117 0%, #0d0f15 60%, #0b0d12 100%), var(--panel);
-    border:1px solid var(--stroke);
-    border-radius:var(--radius);
-    padding: clamp(16px, 2vw, 28px);
-    box-shadow:0 20px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.02), inset 0 -1px 0 rgba(0,0,0,.4);
-  }
-
-  .grid{
-    display:grid; gap: clamp(10px, 2vw, 18px);
-    grid-template-columns: repeat(5, minmax(140px,1fr));
-  }
-  @media (max-width:850px){ .grid{ grid-template-columns: repeat(2,1fr) } }
-
-  .unit{
-    display:grid; gap:10px; align-items:center; justify-items:center;
-  }
-  .label{
-    text-transform:uppercase; font-weight:700; letter-spacing:.18em;
-    font-size:12px; color:var(--muted);
-  }
-
-  .digits{
-    --h: 96px;
-    height: var(--h);
-    width: min(220px, 100%);
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    background:linear-gradient(180deg, #10131b 0%, #0b0e15 50%, #090c12 100%), var(--bevel);
-    border:1px solid rgba(255,255,255,.06);
-    border-radius:14px;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 -10px 18px rgba(0,0,0,.55), 0 14px 28px rgba(0,0,0,.35);
-    position:relative; overflow:hidden;
-  }
-
-  .digits::after{
-    content:""; position:absolute; inset:0;
-    background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 35%, rgba(255,255,255,.03) 70%, transparent);
-    mix-blend-mode:screen; pointer-events:none;
-  }
-
-  .digit{
-    min-width: 2ch; text-align:center;
-    font-variant-numeric: tabular-nums; font-weight:900;
-    font-size: clamp(38px, 6vw, 62px); line-height:1;
-    letter-spacing:.02em;
-    text-shadow:0 0 18px rgba(225,6,0,.18), 0 2px 0 rgba(0,0,0,.6);
-    transition: transform .18s ease, filter .18s ease;
-  }
-
-  .flip{ animation: flip .32s cubic-bezier(.22,.61,.36,1); }
-  @keyframes flip{
-    0%{ transform: translateY(0) rotateX(0deg); filter: drop-shadow(0 0 0 rgba(225,6,0,0)) }
-    49%{ transform: translateY(-2px) rotateX(-25deg) }
-    100%{ transform: translateY(0) rotateX(0deg); filter: drop-shadow(0 0 14px rgba(225,6,0,.35)) }
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Progression de la condamnation</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#111111;
+      --muted:#6b7280;
+      --accent:#800000;       /* bordeaux (style OSIRIS) */
+      --accent-soft:#e8d6d6;  /* bordeaux clair très doux */
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100dvh; display:grid; place-items:center;
+      background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+    }
+    .card{
+      width:min(680px,92vw);
+      border:1px solid #e5e7eb; border-radius:var(--radius);
+      padding:28px 24px; box-shadow:0 10px 30px rgba(0,0,0,.06);
+      background:#fff;
+    }
+    h1{
+      margin:0 0 6px; font-size:clamp(22px,3.8vw,28px);
+      letter-spacing:.2px;
+    }
+    .range{
+      margin:0 0 18px; color:var(--muted);
+      font-size:clamp(13px,2.4vw,14px)
+    }
+    .bar-wrap{
+      margin:14px 0 22px; height:14px; background:var(--accent-soft);
+      border-radius:999px; overflow:hidden; border:1px solid #eadbdb;
+    }
+    .bar{height:100%; width:0%; background:var(--accent); transition:width .6s ease}
+    .numbers{
+      display:grid; gap:10px; font-size:clamp(18px,3.2vw,22px);
+      line-height:1.3;
+    }
+    .muted{color:var(--muted); font-size:clamp(12px,2.2vw,13px)}
+    .mono{font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1;}
+    footer{margin-top:14px; color:var(--muted); font-size:12px}
+  </style>
 </head>
 <body>
-  <main>
-    <h1>REPRISE DU VOLANT DANS :</h1>
-    <section class="board" role="timer">
-      <div class="grid">
-        <div class="unit"><div class="label">Mois</div><div class="digits" data-unit="months"><span class="digit">0</span><span class="digit">0</span></div></div>
-        <div class="unit"><div class="label">Jours</div><div class="digits" data-unit="days"><span class="digit">0</span><span class="digit">0</span></div></div>
-        <div class="unit"><div class="label">Heures</div><div class="digits" data-unit="hours"><span class="digit">0</span><span class="digit">0</span></div></div>
-        <div class="unit"><div class="label">Minutes</div><div class="digits" data-unit="mins"><span class="digit">0</span><span class="digit">0</span></div></div>
-        <div class="unit"><div class="label">Secondes</div><div class="digits" data-unit="secs"><span class="digit">0</span><span class="digit">0</span></div></div>
-      </div>
-    </section>
+  <main class="card">
+    <h1>Progression de la période</h1>
+    <p class="range">Du <strong>5 octobre 2025</strong> au <strong>6 février 2026</strong></p>
+
+    <div class="bar-wrap" aria-hidden="true"><div id="bar" class="bar"></div></div>
+
+    <div class="numbers">
+      <div id="daysLeft" class="mono">… jours restants.</div>
+      <div id="pctDone" class="mono">…% déjà effectués.</div>
+      <div class="muted" id="detail"></div>
+    </div>
+
+    <footer id="now"></footer>
   </main>
 
-<script>
-  // ====== Date cible : 5 février 2026 à 00h00 ======
-  const target = new Date("2026-02-05T00:00:00+01:00");
+  <script>
+    // Utilitaires jours (calculs en UTC pour éviter les décalages d'heure)
+    const MS_DAY = 24 * 60 * 60 * 1000;
+    const utcDate = (y, m, d) => new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
 
-  const slots = {
-    months: document.querySelector('.digits[data-unit="months"]'),
-    days : document.querySelector('.digits[data-unit="days"]'),
-    hours: document.querySelector('.digits[data-unit="hours"]'),
-    mins : document.querySelector('.digits[data-unit="mins"]'),
-    secs : document.querySelector('.digits[data-unit="secs"]'),
-  };
+    // Bornes de la période
+    const START = utcDate(2025, 10, 5);   // 5 octobre 2025
+    const END   = utcDate(2026,  2, 6);   // 6 février 2026
 
-  const pad2 = n => String(n).padStart(2,"0");
+    function clamp(v, min, max){ return Math.min(Math.max(v, min), max); }
 
-  function flipTo(el, val){
-    if(el.textContent !== val){
-      el.classList.remove('flip'); void el.offsetWidth;
-      el.textContent = val;
-      el.classList.add('flip');
-    }
-  }
-
-  function diffTime(from, to){
-    // Calcule les mois, jours, heures, minutes, secondes restants
-    let years = to.getFullYear() - from.getFullYear();
-    let months = to.getMonth() - from.getMonth() + years * 12;
-    let tmp = new Date(from);
-    tmp.setMonth(tmp.getMonth() + months);
-
-    if(tmp > to){
-      months--;
-      tmp.setMonth(tmp.getMonth() - 1);
+    function daysBetween(a, b){
+      // Différence entière en jours (UTC)
+      return Math.round((b.getTime() - a.getTime()) / MS_DAY);
     }
 
-    let seconds = Math.floor((to - tmp) / 1000);
-    const days = Math.floor(seconds / 86400);
-    seconds %= 86400;
-    const hours = Math.floor(seconds / 3600);
-    seconds %= 3600;
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    function compute(){
+      // "Aujourd'hui" en UTC (au début de journée UTC)
+      const now = new Date();
+      const todayUTC = new Date(Date.UTC(
+        now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
+      ));
 
-    return {months, days, hours, mins, secs};
-  }
+      const totalDays = daysBetween(START, END);               // total (ici 124)
+      const elapsedDaysRaw = daysBetween(START, todayUTC);     // écoulés (peut être <0 ou > total)
+      const elapsedDays = clamp(elapsedDaysRaw, 0, totalDays);
+      const remainingDays = clamp(daysBetween(todayUTC, END), 0, totalDays);
 
-  function update(){
-    const now = new Date();
-    const {months, days, hours, mins, secs} = diffTime(now, target);
+      const pct = totalDays > 0 ? (elapsedDays / totalDays) * 100 : 0;
 
-    const vals = {
-      months: pad2(months),
-      days: pad2(days),
-      hours: pad2(hours),
-      mins: pad2(mins),
-      secs: pad2(secs)
-    };
+      // Mise à jour UI
+      const fmt = (n) => n.toLocaleString('fr-FR');
+      document.getElementById('daysLeft').textContent = `${fmt(remainingDays)} jours restants.`;
+      document.getElementById('pctDone').textContent  = `${pct.toFixed(1).replace('.', ',')}% déjà effectués.`;
+      document.getElementById('bar').style.width = `${pct}%`;
 
-    for(const [key,val] of Object.entries(vals)){
-      const digits = slots[key].querySelectorAll('.digit');
-      if(digits[0]) flipTo(digits[0], val[0]);
-      if(digits[1]) flipTo(digits[1], val[1]);
+      // Détail (optionnel)
+      document.getElementById('detail').textContent =
+        `Écoulés : ${fmt(elapsedDays)} j / Total : ${fmt(totalDays)} j`;
+
+      // Horodatage (confort)
+      try{
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'local';
+        document.getElementById('now').textContent =
+          `Calcul basé sur la date du jour (${tz}).`;
+      }catch(_){
+        document.getElementById('now').textContent = `Calcul basé sur la date du jour.`;
+      }
     }
-  }
 
-  update();
-  setInterval(update,1000);
-</script>
+    compute();
+
+    // Recalcule automatiquement juste après minuit (toutes les 10 minutes en sécurité)
+    setInterval(compute, 10 * 60 * 1000);
+  </script>
 </body>
 </html>
