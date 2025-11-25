@@ -55,8 +55,10 @@
       font-weight:500;
       color:var(--muted);
     }
+
+    /* === Barre de progression === */
     .bar-wrap{
-      margin:40px 0 50px; /* espace augmenté pour les graduations */
+      margin:45px 0 55px;
       height:16px;
       background:var(--accent-soft);
       border-radius:999px;
@@ -71,19 +73,43 @@
       transition:width 0.7s ease-in-out;
     }
 
-    /* 🔹 Graduations */
+    /* === Graduations === */
     .markings{
       position:absolute;
       left:0; right:0;
       display:flex;
       justify-content:space-between;
-      font-size:11px;
+      font-size:12px;
       font-weight:500;
-      color:var(--muted);
+      color:rgba(0,0,0,0.55);
       pointer-events:none;
+      z-index:5; /* 🔥 s’affiche devant la barre */
     }
-    .markings.top{ top:-22px; }
-    .markings.bottom{ bottom:-22px; }
+    .markings.top{ top:-32px; }
+    .markings.bottom{ bottom:-32px; }
+
+    .markings span{
+      position:relative;
+      transform:translateX(-50%);
+      left:50%;
+      white-space:nowrap;
+    }
+
+    /* Traits verticaux */
+    .markings span::after{
+      content:'';
+      position:absolute;
+      left:50%;
+      width:1px;
+      height:6px;
+      background:rgba(0,0,0,0.3);
+      top:calc(100% + 2px);
+      transform:translateX(-50%);
+    }
+    .markings.bottom span::after{
+      top:auto;
+      bottom:calc(100% + 2px);
+    }
 
     .numbers{
       display:grid;
@@ -111,17 +137,16 @@
     <h1>Progression de la période</h1>
     <p class="range">Du <strong>5 octobre 2025</strong> au <strong>6 février 2026</strong></p>
 
-    <!-- ▓▓▓ Barre + graduations ▓▓▓ -->
     <div class="bar-wrap" aria-hidden="true">
       <div id="bar" class="bar"></div>
 
-      <!-- Haut = % -->
+      <!-- Haut : pourcentages -->
       <div class="markings top">
         <span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span>
         <span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span>
       </div>
 
-      <!-- Bas = jours -->
+      <!-- Bas : jours -->
       <div id="markings-days" class="markings bottom"></div>
     </div>
 
@@ -133,7 +158,6 @@
   </main>
 
   <script>
-    // ⚙️ Utilitaires de calcul
     const MS_DAY = 24 * 60 * 60 * 1000;
     const utcDate = (y, m, d) => new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
     const START = utcDate(2025, 10, 5);
@@ -142,7 +166,6 @@
     function clamp(v, min, max){ return Math.min(Math.max(v, min), max); }
     function daysBetween(a, b){ return Math.round((b.getTime() - a.getTime()) / MS_DAY); }
 
-    // 📍 Remplir les graduations jours
     function updateDayMarkings(totalDays){
       const markingsDays = document.getElementById('markings-days');
       markingsDays.innerHTML = '';
@@ -154,7 +177,6 @@
       }
     }
 
-    // 🧮 Calcul et affichage
     function compute(){
       const now = new Date();
       const todayUTC = new Date(Date.UTC(
@@ -174,12 +196,11 @@
       document.getElementById('bar').style.width = `${pct}%`;
       document.getElementById('detail').textContent = `Écoulés : ${fmt(elapsedDays)} j / Total : ${fmt(totalDays)} j`;
 
-      // Met à jour les graduations jours
       updateDayMarkings(totalDays);
     }
 
     compute();
-    setInterval(compute, 10 * 60 * 1000);  // Mise à jour toutes les 10 min
+    setInterval(compute, 10 * 60 * 1000);
   </script>
 </body>
 </html>
